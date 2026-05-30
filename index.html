@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OBS Stopwatch with On-Record Background Splits</title>
+    <title>OBS Stopwatch with Transparent Controls</title>
     <style>
         body {
             margin: 0;
@@ -46,15 +46,16 @@
             font-size: 1rem;
             cursor: pointer;
             border-radius: 6px;
-            border: 2px solid rgba(255, 255, 255, 0.7);
-            background-color: rgba(0, 0, 0, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            /* 背景を薄い黒の透過設定に変更 */
+            background-color: rgba(0, 0, 0, 0.4);
             color: #ffffff;
             transition: all 0.2s ease;
             backdrop-filter: blur(4px);
         }
 
         button:hover {
-            background-color: rgba(50, 50, 50, 0.9);
+            background-color: rgba(50, 50, 50, 0.6);
             border-color: #ffffff;
             transform: translateY(-2px);
         }
@@ -63,12 +64,11 @@
             transform: translateY(0);
         }
 
-        /* スプリット表示エリア：4レコードが収まる高さに調整 */
         #splits {
             color: rgba(255, 255, 255, 0.9);
             width: 100%;
             max-width: 400px;
-            height: 165px; /* 4件分を確保する高さ */
+            height: 165px;
             overflow-y: auto;
             font-size: 0.9rem;
             background-color: rgba(0, 0, 0, 0);
@@ -77,13 +77,13 @@
             border-radius: 6px;
         }
 
-        /* 各スプリットレコードのスタイル */
         .split-record {
             margin-bottom: 8px;
             padding: 8px 15px;
             border-radius: 4px;
-            background-color: rgba(0, 0, 0, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            /* スプリットレコードも薄い黒の透過設定に変更 */
+            background-color: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             display: inline-block;
             backdrop-filter: blur(4px);
         }
