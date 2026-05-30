@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OBS Stopwatch with On-Record Background Splits</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background-color: rgba(0, 0, 0, 0);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            font-family: 'Segoe UI', sans-serif;
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+
+        .main-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        #timer {
+            font-size: 6rem;
+            font-weight: bold;
+            color: #ffffff;
+            text-shadow: 0 0 10px rgba(0,0,0,0.8);
+            font-variant-numeric: tabular-nums;
+            margin-bottom: 20px;
+            cursor: pointer;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 1rem;
+            cursor: pointer;
+            border-radius: 6px;
+            border: 2px solid rgba(255, 255, 255, 0.7);
+            background-color: rgba(0, 0, 0, 0.7);
+            color: #ffffff;
+            transition: all 0.2s ease;
+            backdrop-filter: blur(4px);
+        }
+
+        button:hover {
+            background-color: rgba(50, 50, 50, 0.9);
+            border-color: #ffffff;
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        /* スプリット表示エリア：4レコードが収まる高さに調整 */
+        #splits {
+            color: rgba(255, 255, 255, 0.9);
+            width: 100%;
+            max-width: 400px;
+            height: 165px; /* 4件分を確保する高さ */
+            overflow-y: auto;
+            font-size: 0.9rem;
+            background-color: rgba(0, 0, 0, 0);
+            border: none;
+            text-align: center;
+            border-radius: 6px;
+        }
+
+        /* 各スプリットレコードのスタイル */
+        .split-record {
+            margin-bottom: 8px;
+            padding: 8px 15px;
+            border-radius: 4px;
+            background-color: rgba(0, 0, 0, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            display: inline-block;
+            backdrop-filter: blur(4px);
+        }
+
+        #modal {
+            display: none;
+            position: fixed;
+            top: 20%;
+            background: rgba(20, 20, 20, 0.95);
+            padding: 25px;
+            border-radius: 10px;
+            color: white;
+            box-shadow: 0 0 30px rgba(0,0,0,0.7);
+            text-align: center;
+            border: 2px solid rgba(255,255,255,0.4);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main-container">
+        <div id="timer" onclick="openModal()">00:00.0</div>
+
+        <div class="controls">
+            <button onclick="toggleTimer()" id="startBtn">スタート</button>
+            <button onclick="resetTimer()">リセット</button>
+            <button onclick="addSplit()">スプリット</button>
+        </div>
+    </div>
+
+    <div id="splits"></div>
+
+    <div id="modal">
+        <h3>表示色設定</h3>
+        <input type="color" id="colorPicker" value="#ffffff">
+        <br><br>
+        <button onclick="closeModal()">完了</button>
+    </div>
+
+    <script>
+        let startTime;
+        let elapsedTime = 0;
+        let timerInterval = null;
+
+        const timerDisplay = document.getElementById('timer');
+        const startBtn = document.getElementById('startBtn');
+        const splitsDisplay = document.getElementById('splits');
+        const modal = document.getElementById('modal');
+        const colorPicker = document.getElementById('colorPicker');
+
+        function openModal() { modal.style.display = 'block'; }
+        function closeModal() { 
+            timerDisplay.style.color = colorPicker.value; 
+            modal.style.display = 'none'; 
+        }
+
+        function updateDisplay() {
+            const minutes = String(Math.floor(elapsedTime / 60000)).padStart(2, '0');
+            const seconds = String(Math.floor((elapsedTime % 60000) / 1000)).padStart(2, '0');
+            const deciseconds = Math.floor((elapsedTime % 1000) / 100);
+            timerDisplay.textContent = `${minutes}:${seconds}.${deciseconds}`;
+        }
+
+        function toggleTimer() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+                startBtn.textContent = 'スタート';
+            } else {
+                startTime = Date.now() - elapsedTime;
+                timerInterval = setInterval(() => {
+                    elapsedTime = Date.now() - startTime;
+                    updateDisplay();
+                }, 100);
+                startBtn.textContent = 'ストップ';
+            }
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            elapsedTime = 0;
+            startBtn.textContent = 'スタート';
+            splitsDisplay.innerHTML = '';
+            updateDisplay();
+        }
+
+        function addSplit() {
+            const splitContent = `Split: ${timerDisplay.textContent}`;
+            const span = document.createElement('span');
+            span.textContent = splitContent;
+            span.className = 'split-record';
+
+            const div = document.createElement('div');
+            div.appendChild(span);
+
+            splitsDisplay.prepend(div);
+        }
+    </script>
+</body>
+</html>
