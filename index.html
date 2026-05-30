@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OBS Stopwatch with Transparent Controls</title>
+    <title>OBS Stopwatch with Title Settings</title>
     <style>
         body {
             margin: 0;
@@ -25,13 +25,26 @@
             flex-shrink: 0;
         }
 
+        .timer-row {
+            display: flex;
+            align-items: baseline;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        #displayTitle {
+            font-size: 2.5rem;
+            color: #ffffff;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(0,0,0,0.8);
+        }
+
         #timer {
             font-size: 6rem;
             font-weight: bold;
             color: #ffffff;
             text-shadow: 0 0 10px rgba(0,0,0,0.8);
             font-variant-numeric: tabular-nums;
-            margin-bottom: 20px;
             cursor: pointer;
         }
 
@@ -39,6 +52,7 @@
             display: flex;
             gap: 15px;
             margin-bottom: 20px;
+            align-items: center;
         }
 
         button {
@@ -47,7 +61,6 @@
             cursor: pointer;
             border-radius: 6px;
             border: 1px solid rgba(255, 255, 255, 0.3);
-            /* 背景を薄い黒の透過設定に変更 */
             background-color: rgba(0, 0, 0, 0.4);
             color: #ffffff;
             transition: all 0.2s ease;
@@ -81,7 +94,6 @@
             margin-bottom: 8px;
             padding: 8px 15px;
             border-radius: 4px;
-            /* スプリットレコードも薄い黒の透過設定に変更 */
             background-color: rgba(0, 0, 0, 0.4);
             border: 1px solid rgba(255, 255, 255, 0.2);
             display: inline-block;
@@ -91,21 +103,29 @@
         #modal {
             display: none;
             position: fixed;
-            top: 20%;
+            top: 10%;
             background: rgba(20, 20, 20, 0.95);
-            padding: 25px;
+            padding: 20px;
             border-radius: 10px;
             color: white;
             box-shadow: 0 0 30px rgba(0,0,0,0.7);
             text-align: center;
             border: 2px solid rgba(255,255,255,0.4);
+            max-height: 80vh;
+            overflow-y: auto;
         }
+
+        #modal label { display: block; margin-top: 10px; font-size: 0.9rem; }
+        #modal input { width: 80%; padding: 5px; margin-top: 5px; }
     </style>
 </head>
 <body>
 
     <div class="main-container">
-        <div id="timer" onclick="openModal()">00:00.0</div>
+        <div class="timer-row">
+            <div id="displayTitle"></div>
+            <div id="timer" onclick="openModal()">00:00.0</div>
+        </div>
 
         <div class="controls">
             <button onclick="toggleTimer()" id="startBtn">スタート</button>
@@ -117,26 +137,47 @@
     <div id="splits"></div>
 
     <div id="modal">
-        <h3>表示色設定</h3>
+        <h3>詳細設定</h3>
+        <label>タイトル:</label>
+        <input type="text" id="titleInput" placeholder="タイトルを入力">
+        
+        <label>タイトルのサイズ (rem):</label>
+        <input type="number" id="titleSize" value="2.5" step="0.1">
+
+        <label>タイトルの文字間隔 (px):</label>
+        <input type="number" id="titleSpacing" value="0" step="1">
+
+        <label>タイマーの色:</label>
         <input type="color" id="colorPicker" value="#ffffff">
+        
         <br><br>
-        <button onclick="closeModal()">完了</button>
+        <button onclick="closeModal()">適用して閉じる</button>
     </div>
 
     <script>
         let startTime;
         let elapsedTime = 0;
         let timerInterval = null;
+        let splitCount = 0;
 
         const timerDisplay = document.getElementById('timer');
+        const displayTitle = document.getElementById('displayTitle');
         const startBtn = document.getElementById('startBtn');
         const splitsDisplay = document.getElementById('splits');
         const modal = document.getElementById('modal');
         const colorPicker = document.getElementById('colorPicker');
+        const titleInput = document.getElementById('titleInput');
+        const titleSize = document.getElementById('titleSize');
+        const titleSpacing = document.getElementById('titleSpacing');
 
         function openModal() { modal.style.display = 'block'; }
+        
         function closeModal() { 
-            timerDisplay.style.color = colorPicker.value; 
+            timerDisplay.style.color = colorPicker.value;
+            displayTitle.style.color = colorPicker.value;
+            displayTitle.textContent = titleInput.value;
+            displayTitle.style.fontSize = titleSize.value + 'rem';
+            displayTitle.style.letterSpacing = titleSpacing.value + 'px';
             modal.style.display = 'none'; 
         }
 
@@ -166,13 +207,16 @@
             clearInterval(timerInterval);
             timerInterval = null;
             elapsedTime = 0;
+            splitCount = 0;
             startBtn.textContent = 'スタート';
             splitsDisplay.innerHTML = '';
             updateDisplay();
         }
 
         function addSplit() {
-            const splitContent = `Split: ${timerDisplay.textContent}`;
+            splitCount++;
+            const title = titleInput.value ? `${titleInput.value} ` : '';
+            const splitContent = `${title}スプリット${splitCount}　${timerDisplay.textContent}`;
             const span = document.createElement('span');
             span.textContent = splitContent;
             span.className = 'split-record';
