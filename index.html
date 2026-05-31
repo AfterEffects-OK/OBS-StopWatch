@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OBS Stopwatch with Kerning and Adaptive Edges</title>
+    <title>OBS Stopwatch with Smart Scrollbar</title>
     <style>
         body {
             margin: 0;
@@ -67,6 +67,23 @@
             overflow-y: auto;
             color: white;
             padding: 10px;
+            scrollbar-width: thin; /* Firefox用 */
+        }
+
+        /* スマートなスクロールバーのスタイル (Chrome, Edge, OBS) */
+        #splits::-webkit-scrollbar {
+            width: 6px;
+        }
+        #splits::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 3px;
+        }
+        #splits::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
+        }
+        #splits::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.5);
         }
         
         .split-item { 
