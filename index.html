@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OBS Stopwatch with Hour Support</title>
+    <title>OBS Stopwatch with Fixed Input</title>
     <style>
         body {
             margin: 0;
@@ -113,10 +113,11 @@
             border: 2px solid rgba(255,255,255,0.4);
             max-height: 80vh;
             overflow-y: auto;
+            z-index: 1000;
         }
 
         #modal label { display: block; margin-top: 10px; font-size: 0.9rem; }
-        #modal input { width: 80%; padding: 5px; margin-top: 5px; }
+        #modal input { width: 80%; padding: 5px; margin-top: 5px; color: #000; }
     </style>
 </head>
 <body>
@@ -170,7 +171,11 @@
         const titleSize = document.getElementById('titleSize');
         const titleSpacing = document.getElementById('titleSpacing');
 
-        function openModal() { modal.style.display = 'block'; }
+        function openModal() { 
+            modal.style.display = 'block'; 
+            // モーダルが開いた際に入力フィールドに強制フォーカス
+            setTimeout(() => titleInput.focus(), 100);
+        }
         
         function closeModal() { 
             timerDisplay.style.color = colorPicker.value;
@@ -180,6 +185,11 @@
             displayTitle.style.letterSpacing = titleSpacing.value + 'px';
             modal.style.display = 'none'; 
         }
+
+        // 入力中のOBSキー入力をブロックしないようにイベントを伝播
+        titleInput.addEventListener('keydown', (e) => {
+            e.stopPropagation();
+        });
 
         function updateDisplay() {
             const totalSeconds = Math.floor(elapsedTime / 1000);
@@ -225,7 +235,6 @@
 
         function addSplit() {
             splitCount++;
-            const title = titleInput.value ? `${titleInput.value} ` : '';
             const splitContent = `スプリット${splitCount}　${timerDisplay.textContent}`;
             const span = document.createElement('span');
             span.textContent = splitContent;
