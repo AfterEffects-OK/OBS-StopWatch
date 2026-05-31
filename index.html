@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OBS Stopwatch with Title Settings</title>
+    <title>OBS Stopwatch with Hour Support</title>
     <style>
         body {
             margin: 0;
@@ -182,10 +182,20 @@
         }
 
         function updateDisplay() {
-            const minutes = String(Math.floor(elapsedTime / 60000)).padStart(2, '0');
-            const seconds = String(Math.floor((elapsedTime % 60000) / 1000)).padStart(2, '0');
+            const totalSeconds = Math.floor(elapsedTime / 1000);
+            const hours = Math.floor(totalSeconds / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = totalSeconds % 60;
             const deciseconds = Math.floor((elapsedTime % 1000) / 100);
-            timerDisplay.textContent = `${minutes}:${seconds}.${deciseconds}`;
+            
+            const mm = String(minutes).padStart(2, '0');
+            const ss = String(seconds).padStart(2, '0');
+            
+            if (hours > 0) {
+                timerDisplay.textContent = `${hours}:${mm}:${ss}.${deciseconds}`;
+            } else {
+                timerDisplay.textContent = `${mm}:${ss}.${deciseconds}`;
+            }
         }
 
         function toggleTimer() {
@@ -216,7 +226,7 @@
         function addSplit() {
             splitCount++;
             const title = titleInput.value ? `${titleInput.value} ` : '';
-            const splitContent = `${title}スプリット${splitCount}　${timerDisplay.textContent}`;
+            const splitContent = `スプリット${splitCount}　${timerDisplay.textContent}`;
             const span = document.createElement('span');
             span.textContent = splitContent;
             span.className = 'split-record';
