@@ -42,8 +42,22 @@
                 -2px 2px 0 #000, 2px 2px 0 #000;
         }
 
-        .controls { display: flex; gap: 10px; margin-bottom: 20px; }
-        button { padding: 8px 16px; cursor: pointer; background: rgba(0,0,0,0.5); color: #fff; border: 1px solid #fff; border-radius: 4px; }
+        .controls { display: flex; gap: 15px; margin-bottom: 20px; }
+        button { 
+            padding: 12px 24px; 
+            font-size: 1.2rem; 
+            font-weight: bold;
+            cursor: pointer; 
+            background: rgba(50, 50, 50, 0.8); 
+            color: #fff; 
+            border: 2px solid #fff; 
+            border-radius: 8px;
+            transition: all 0.2s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            min-width: 100px;
+        }
+        button:hover { background: rgba(80, 80, 80, 0.9); }
+        button:active { transform: translateY(2px); box-shadow: 0 2px 3px rgba(0,0,0,0.2); }
 
         #settingsPanel {
             background: rgba(20, 20, 20, 0.8);
@@ -120,6 +134,9 @@
         </div>
 
         <div id="settingsPanel">
+            <div style="width: 100%; font-size: 0.8rem; color: #ccc; border-bottom: 1px solid #444; padding-bottom: 5px; margin-bottom: 8px;">
+                設定：タイトル入力後に Enter で確定 ／ カラーピッカーが反応しない場合は右の色ボタンを使用
+            </div>
             <input type="text" id="titleInput" placeholder="タイトル" style="width:150px" autocomplete="off" spellcheck="false">
             <input type="number" id="titleSize" value="2.5" step="0.1" placeholder="サイズ" oninput="updateSettings()">
             <input type="number" id="titleSpacing" value="0" step="1" placeholder="間隔" oninput="updateSettings()">
