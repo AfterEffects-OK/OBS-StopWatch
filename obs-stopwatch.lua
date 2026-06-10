@@ -40,10 +40,16 @@ end
 -- フォーマット関数: ミリ秒を 00:00.0 形式に変換
 function format_time(ms)
     local total_seconds = math.floor(ms / 1000)
+    local hours = math.floor(total_seconds / 3600)
     local minutes = math.floor((total_seconds % 3600) / 60)
     local seconds = total_seconds % 60
     local deciseconds = math.floor((ms % 1000) / 100)
-    return string.format("%02d:%02d.%d", minutes, seconds, deciseconds)
+
+    if hours > 0 then
+        return string.format("%d:%02d:%02d.%d", hours, minutes, seconds, deciseconds)
+    else
+        return string.format("%02d:%02d.%d", minutes, seconds, deciseconds)
+    end
 end
 
 -- テキストソースの更新
